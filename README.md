@@ -17,3 +17,8 @@ Extract the downloaded file and attach `.pdb` extension to files
 $ tar xvf cath-dataset-nonredundant-S40.pdb.tgz && cd dompdb
 $ for f in *; do mv "$f" "$f.pdb"; done
 ```
+
+Run `snakemake` pipeline to convert pdb files to `npy` files containing angle information of shape (n, 6).
+```
+$ snakemake -s preprocess.smk -prq -j [CORES] --keep-going
+```
