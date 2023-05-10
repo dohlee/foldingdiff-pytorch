@@ -1,0 +1,5 @@
+data/
+note/.ipynb_checkpoints/
+*.egg-info
+**/__pycache__/
+wandb/
