@@ -34,7 +34,6 @@ class RandomFourierFeatures(nn.Module):
 
         self.w = nn.Linear(1, 192)
         nn.init.normal_(self.time_w.weight, std=2 * torch.pi)
-        self.time_embed = nn.Sequential()
     
     def forward(self, t):
         t = self.w(t)
