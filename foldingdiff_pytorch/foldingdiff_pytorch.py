@@ -5,6 +5,8 @@ import torch.optim as optim
 import pytorch_lightning as pl
 
 from torch.optim.lr_scheduler import _LRScheduler
+from transformers import BertConfig
+from transformers.models.bert.modeling_bert import BertEncoder
 
 
 class LinearAnnealingLR(_LRScheduler):
@@ -32,8 +34,9 @@ class RandomFourierFeatures(nn.Module):
     def __init__(self):
         super().__init__()
 
-        self.w = nn.Linear(1, 192)
-        nn.init.normal_(self.time_w.weight, std=2 * torch.pi)
+        self.w = nn.Linear(1, 192, bias=False)
+        nn.init.normal_(self.w.weight, std=2 * torch.pi)
+        self.w.weight.requires_grad = False
     
     def forward(self, t):
         t = self.w(t)
@@ -47,7 +50,16 @@ class FoldingDiff(pl.LightningModule):
         self.upscale = nn.Linear(6, 384)
         self.time_embed = RandomFourierFeatures()
 
-        # TODO: Transformer with relative positional encoding here
+        config = BertConfig(
+            hidden_size=384,
+            num_hidden_layers=12,
+            num_attention_heads=12,
+            intermediate_size=384 * 2,
+            max_position_embeddings=512,
+            hidden_dropout_prob=0.1,
+            position_embedding_type='relative_key',
+        )
+        self.encoder = BertEncoder(config)
 
         self.head = nn.Sequential(
             nn.Linear(384, 384),
@@ -58,10 +70,8 @@ class FoldingDiff(pl.LightningModule):
 
     def forward(self, x, t):
         x = self.upscale(x) + self.time_embed(t)
-
-        # TODO: forward pass here
-
-        pass
+        bert_output = self.encoder(x)
+        return self.head(bert_output.last_hidden_state)
 
     def training_step(self, batch, batch_idx):
         x = batch["x"]
@@ -94,4 +104,11 @@ class FoldingDiff(pl.LightningModule):
             optimizer, num_annealing_steps=1000, num_total_steps=10000
         )
 
-        return [optimizer], [scheduler]
+        return {'optimizer': optimizer, 'lr_scheduler': scheduler}
+
+if __name__ == '__main__':
+    model = FoldingDiff()
+
+    x = torch.randn(1, 128, 6)
+    t = torch.tensor([[0.0]])
+    print( model(x, t).shape )
