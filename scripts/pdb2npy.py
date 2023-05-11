@@ -1,6 +1,7 @@
 import argparse
 import biotite.structure as struc
 import numpy as np
+import warnings; warnings.filterwarnings('ignore')
 
 from biotite.structure.io.pdb import PDBFile
 
@@ -36,13 +37,6 @@ if __name__ == '__main__':
     theta1 = struc.index_angle(structure, triplet_indices[range(0, n-2, 3)])
     theta2 = struc.index_angle(structure, triplet_indices[range(1, n-2, 3)])
     theta3 = struc.index_angle(structure, triplet_indices[range(2, n-2, 3)])
-
-    print(phi.shape)
-    print(psi.shape)
-    print(omega.shape)
-    print(theta1.shape)
-    print(theta2.shape)
-    print(theta3.shape)
 
     npy = np.array([
         phi,

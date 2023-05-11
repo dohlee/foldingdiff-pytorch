@@ -28,12 +28,25 @@ class LinearAnnealingLR(_LRScheduler):
                 for base_lr in self.base_lrs
             ]
 
+class RandomFourierFeatures(nn.Module):
+    def __init__(self):
+        super().__init__()
+
+        self.w = nn.Linear(1, 192)
+        nn.init.normal_(self.time_w.weight, std=2 * torch.pi)
+        self.time_embed = nn.Sequential()
+    
+    def forward(self, t):
+        t = self.w(t)
+        return torch.cat([ torch.sin(t) , torch.cos(t) ], axis=-1)
+
 
 class FoldingDiff(pl.LightningModule):
     def __init__(self):
         super().__init__()
 
         self.upscale = nn.Linear(6, 384)
+        self.time_embed = RandomFourierFeatures()
 
         # TODO: Transformer with relative positional encoding here
 
@@ -45,7 +58,8 @@ class FoldingDiff(pl.LightningModule):
         )
 
     def forward(self, x, t):
-        # TODO: Random Fourier feature embeddings here
+        x = self.upscale(x) + self.time_embed(t)
+
         # TODO: forward pass here
 
         pass

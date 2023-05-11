@@ -6,6 +6,10 @@
 
 An unofficial re-implementation of FoldingDiff, a diffusion-based generative model for protein backbone structure generation.
 
+## Installation
+
+WIP
+
 ## Downloading and preprocessing training data
 Download non-redundant protein backbone structure data (40% similary cutoff) from CATH.
 ```bash 
