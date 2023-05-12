@@ -34,9 +34,9 @@ if __name__ == '__main__':
         np.arange(2, n)
     ]).T
 
-    theta1 = struc.index_angle(structure, triplet_indices[range(0, n-2, 3)])
-    theta2 = struc.index_angle(structure, triplet_indices[range(1, n-2, 3)])
-    theta3 = struc.index_angle(structure, triplet_indices[range(2, n-2, 3)])
+    theta1 = struc.index_angle(backbone, triplet_indices[range(0, n-2, 3)])
+    theta2 = struc.index_angle(backbone, triplet_indices[range(1, n-2, 3)])
+    theta3 = struc.index_angle(backbone, triplet_indices[range(2, n-2, 3)])
 
     npy = np.array([
         phi,
