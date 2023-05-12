@@ -25,13 +25,14 @@ def angles2coord(angles, n_ca=1.46, ca_c=1.54, c_n=1.33):
 
     Implements NeRF (Natural Extension Reference Frame) algorithm.
     """
-    phi, psi, omega, theta1, theta2, theta3 = angles.T.numpy()
+    if isinstance(angles, torch.Tensor):
+        phi, psi, omega, theta1, theta2, theta3 = angles.T.numpy()
+    else:
+        phi, psi, omega, theta1, theta2, theta3 = angles.T
     
-    torsions = np.concatenate([phi[1:], psi[:-1], omega[:-1]], axis=0)
-    bond_angles = np.concatenate([theta1[1:], theta2[:-1], theta3[:-1]], axis=0)
-
-    print(torsions)
-
+    torsions = np.stack([psi[:-1], omega[:-1], phi[1:]], axis=-1).flatten()
+    bond_angles = np.stack([theta2[:-1], theta3[:-1], theta1[1:]], axis=-1).flatten()
+    
     #
     # Place the first three atoms.
     #
@@ -40,13 +41,13 @@ def angles2coord(angles, n_ca=1.46, ca_c=1.54, c_n=1.33):
     # The second atom (Ca) is placed on the x-axis.
     b = np.array([1, 0, 0]) * n_ca
     # The third atom (C) is placed on the xy-plane with bond angle theta1[0]
-    c = np.array([ np.cos(np.pi - theta1[0]), 0, np.sin(np.pi - theta1[0]) ]) * ca_c + b
+    c = np.array([ np.cos(np.pi - theta1[0]), np.sin(np.pi - theta1[0]), 0 ]) * ca_c + b
 
     # Iteratively place the fourth atom based on the last three atoms.
 
     coords = [a, b, c]
     # cycle through [n, ca, c, n, ca, c, ...]
-    for i, bond_length in enumerate([n_ca, ca_c, c_n] * (len(angles) - 1)):
+    for i, bond_length in enumerate([c_n, n_ca, ca_c] * (len(angles) - 1)):
         torsion, bond_angle = torsions[i], bond_angles[i]
         d = place_fourth_atom(a, b, c, bond_angle, torsion, bond_length)
         coords.append(d)
