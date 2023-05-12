@@ -5,6 +5,9 @@
 ![banner](img/banner.png)
 
 An unofficial re-implementation of FoldingDiff, a diffusion-based generative model for protein backbone structure generation.
+The image below shows the forward (noising) process of the protein backbone structure.
+
+<img src="img/noising.gif" width="325">
 
 ## Installation
 
