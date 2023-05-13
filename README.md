@@ -11,6 +11,12 @@ The image below shows the forward (noising) process of the protein backbone stru
 
 ## Installation
 
+Install through pip.
+```bash
+$ pip install foldingdiff-pytorch
+```
+
+## Quickstart
 WIP
 
 ## Downloading and preprocessing training data
