@@ -12,3 +12,5 @@ wandb/
 
 .snakemake/
 lightning_logs/
+
+**/*.ckpt

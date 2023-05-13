@@ -11,7 +11,7 @@ import foldingdiff_pytorch.util as util
 
 
 class FoldingDiffDataset(Dataset):
-    def __init__(self, meta, data_dir, T, s=8e-3, max_len=128):
+    def __init__(self, meta, data_dir, T, mu=None, std=None, s=8e-3, max_len=128, train=True):
         self.meta = meta
         self.records = meta.to_records()
 
@@ -29,6 +29,7 @@ class FoldingDiffDataset(Dataset):
         self.alpha_bar_sqrt = torch.sqrt(self.alpha_bar)
         self.one_minus_alpha_bar_sqrt = torch.sqrt(1 - self.alpha_bar)
 
+
     def __len__(self):
         return len(self.meta)
 
@@ -36,6 +37,7 @@ class FoldingDiffDataset(Dataset):
         r = self.records[idx]
         x0 = torch.tensor(np.load(self.data_dir / f"{r.id}.npy")).float()
         x0.nan_to_num_(0.0)
+
         n_residues = len(x0)
 
         if n_residues < self.max_len:

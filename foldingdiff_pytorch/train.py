@@ -13,23 +13,31 @@ def parse_arguments():
     parser = argparse.ArgumentParser()
     parser.add_argument("--meta", type=str, default="../data/meta.csv")
     parser.add_argument("--data_dir", type=str, default="../data/npy")
-    parser.add_argument("--batch-size", type=int, default=16)  # should be clarified
+    parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--timesteps", type=int, default=1000)
     return parser.parse_args()
 
 
 def main():
-    wandb_logger = pl.loggers.WandbLogger(project="foldingdiff-pytorch", entity="dohlee")
+    wandb_logger = pl.loggers.WandbLogger(
+        project="foldingdiff-pytorch", entity="dohlee"
+    )
 
     args = parse_arguments()
+    wandb_logger.log_hyperparams(args)
 
     meta = pd.read_csv(args.meta).sample(frac=1.0, random_state=42)
     N = len(meta)
 
     train_meta, val_meta = meta.iloc[: int(0.8 * N)], meta.iloc[int(0.8 * N) :]
 
-    train_set = FoldingDiffDataset(meta=train_meta, data_dir=args.data_dir, T=args.timesteps)
-    val_set = FoldingDiffDataset(meta=val_meta, data_dir=args.data_dir, T=args.timesteps)
+    train_set = FoldingDiffDataset(
+        meta=train_meta, data_dir=args.data_dir, T=args.timesteps, train=True
+    )
+
+    val_set = FoldingDiffDataset(
+        meta=val_meta, data_dir=args.data_dir, T=args.timesteps, train=False,
+    )
 
     model = FoldingDiff()
 
