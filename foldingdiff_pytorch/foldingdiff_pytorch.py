@@ -48,6 +48,7 @@ class RandomFourierFeatures(nn.Module):
 class FoldingDiff(pl.LightningModule):
     def __init__(self):
         super().__init__()
+        self.save_hyperparameters()
 
         self.upscale = nn.Linear(6, 384)
         self.time_embed = RandomFourierFeatures()
@@ -100,7 +101,7 @@ class FoldingDiff(pl.LightningModule):
         pass
 
     def configure_optimizers(self):
-        optimizer = optim.AdamW(self.parameters(), lr=1e-3)
+        optimizer = optim.AdamW(self.parameters(), lr=5e-5)
         scheduler = LinearAnnealingLR(optimizer, num_annealing_steps=1000, num_total_steps=10000)
 
         return {"optimizer": optimizer, "lr_scheduler": scheduler}

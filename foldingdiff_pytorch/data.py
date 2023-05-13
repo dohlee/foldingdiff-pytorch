@@ -11,7 +11,7 @@ import foldingdiff_pytorch.util as util
 
 
 class FoldingDiffDataset(Dataset):
-    def __init__(self, meta, data_dir, T, s=8e-3, max_len=512):
+    def __init__(self, meta, data_dir, T, s=8e-3, max_len=128):
         self.meta = meta
         self.records = meta.to_records()
 
