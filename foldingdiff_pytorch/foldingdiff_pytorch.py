@@ -58,7 +58,7 @@ class FoldingDiff(pl.LightningModule):
             num_hidden_layers=12,
             num_attention_heads=12,
             intermediate_size=384 * 2,
-            max_position_embeddings=512,
+            max_position_embeddings=128,
             hidden_dropout_prob=0.1,
             position_embedding_type="relative_key",
         )
