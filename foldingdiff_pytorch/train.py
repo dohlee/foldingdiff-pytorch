@@ -1,41 +1,66 @@
+import argparse
 import torch
 import torch.nn as nn
-import wandb
+import pandas as pd
+import pytorch_lightning as pl
 
 from torch.utils.data import DataLoader
-from pytorch_lightning import Trainer
 from .data import FoldingDiffDataset
 from .foldingdiff_pytorch import FoldingDiff
 
-T = 1000
-bsz = 16  # should be clarified
 
-wandb.init()
+def parse_arguments():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--meta", type=str, default="../data/meta.csv")
+    parser.add_argument("--data_dir", type=str, default="../data/npy")
+    parser.add_argument("--batch-size", type=int, default=16)  # should be clarified
+    parser.add_argument("--timesteps", type=int, default=1000)
+    return parser.parse_args()
 
-train_set = FoldingDiffDataset(T=T)
-val_set = FoldingDiffDataset(T=T)
 
-model = FoldingDiff()
+def main():
+    wandb_logger = pl.loggers.WandbLogger(project="foldingdiff-pytorch", entity="dohlee")
 
-train_dataloader = DataLoader(
-    train_set,
-    batch_size=bsz,
-    shuffle=True,
-    drop_last=True,
-    num_workers=4,
-    pin_memory=True,
-)
-val_dataloader = DataLoader(
-    val_set,
-    batch_size=bsz,
-    shuffle=False,
-    drop_last=False,
-    num_workers=4,
-)
+    args = parse_arguments()
 
-trainer = Trainer()
-trainer.fit(
-    model,
-    train_dataloader,
-    val_dataloader,
-)
+    meta = pd.read_csv(args.meta).sample(frac=1.0, random_state=42)
+    N = len(meta)
+
+    train_meta, val_meta = meta.iloc[: int(0.8 * N)], meta.iloc[int(0.8 * N) :]
+
+    train_set = FoldingDiffDataset(meta=train_meta, data_dir=args.data_dir, T=args.timesteps)
+    val_set = FoldingDiffDataset(meta=val_meta, data_dir=args.data_dir, T=args.timesteps)
+
+    model = FoldingDiff()
+
+    train_dataloader = DataLoader(
+        train_set,
+        batch_size=args.batch_size,
+        shuffle=True,
+        drop_last=True,
+        num_workers=4,
+        pin_memory=True,
+    )
+    val_dataloader = DataLoader(
+        val_set,
+        batch_size=args.batch_size,
+        shuffle=False,
+        drop_last=False,
+        num_workers=4,
+    )
+
+    trainer = pl.Trainer(
+        accelerator="gpu",
+        devices=1,
+        max_epochs=1500,
+        logger=wandb_logger,
+    )
+    trainer.fit(
+        model,
+        train_dataloader,
+        val_dataloader,
+    )
+
+
+if __name__ == "__main__":
+    main()

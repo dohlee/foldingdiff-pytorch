@@ -18,7 +18,6 @@ setup(
   ],
   install_requires=[
     'einops>=0.3',
-    'rdkit',
     'numpy',
     'torch>=1.6',
   ],
