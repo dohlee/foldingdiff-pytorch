@@ -52,3 +52,7 @@ Run `snakemake` pipeline to convert pdb files to `npy` files containing angle in
 ```
 $ snakemake -s preprocess.smk -prq -j [CORES] --keep-going
 ```
+
+## Reproduction status
+
+Model training for reproduction is currently running. The live training log is available at [here](https://api.wandb.ai/links/dohlee/1drc1ujg).
