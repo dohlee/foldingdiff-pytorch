@@ -2,6 +2,7 @@ data/
 
 note/.ipynb_checkpoints/
 note/noising_demo
+note/denoising_demo
 note/*.pdb
 note/*.png
 note/*.gif
@@ -14,3 +15,4 @@ wandb/
 lightning_logs/
 
 **/*.ckpt
+*.pt
