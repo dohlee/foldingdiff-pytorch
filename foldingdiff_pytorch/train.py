@@ -32,11 +32,13 @@ def main():
     train_meta, val_meta = meta.iloc[: int(0.8 * N)], meta.iloc[int(0.8 * N) :]
 
     train_set = FoldingDiffDataset(
-        meta=train_meta, data_dir=args.data_dir, T=args.timesteps, train=True
+        meta=train_meta, data_dir=args.data_dir, T=args.timesteps
     )
+    mu = train_set.get_mu()
+    wandb_logger.log_hyperparams({"mu": mu})
 
     val_set = FoldingDiffDataset(
-        meta=val_meta, data_dir=args.data_dir, T=args.timesteps, train=False,
+        meta=val_meta, data_dir=args.data_dir, T=args.timesteps, mu=mu
     )
 
     model = FoldingDiff()

@@ -11,7 +11,7 @@ import foldingdiff_pytorch.util as util
 
 
 class FoldingDiffDataset(Dataset):
-    def __init__(self, meta, data_dir, T, mu=None, std=None, s=8e-3, max_len=128, train=True):
+    def __init__(self, meta, data_dir, T, mu=None, s=8e-3, max_len=128):
         self.meta = meta
         self.records = meta.to_records()
 
@@ -29,6 +29,20 @@ class FoldingDiffDataset(Dataset):
         self.alpha_bar_sqrt = torch.sqrt(self.alpha_bar)
         self.one_minus_alpha_bar_sqrt = torch.sqrt(1 - self.alpha_bar)
 
+        if mu is None:
+            feats = []
+            for r in self.records:
+                angles = np.load(self.data_dir / f'{r.id}.npy')
+                angles = np.nan_to_num(angles)
+                feats.append(angles)
+
+            feats = np.concatenate(feats, axis=0)
+            self.mu = torch.tensor( feats.mean(axis=0) ).float()
+        else:
+            self.mu = torch.tensor(mu).float()
+    
+    def get_mu(self):
+        return self.mu
 
     def __len__(self):
         return len(self.meta)
@@ -37,9 +51,9 @@ class FoldingDiffDataset(Dataset):
         r = self.records[idx]
         x0 = torch.tensor(np.load(self.data_dir / f"{r.id}.npy")).float()
         x0.nan_to_num_(0.0)
+        x0 = util.wrap(x0 - self.mu)
 
         n_residues = len(x0)
-
         if n_residues < self.max_len:
             x0 = torch.cat([x0, torch.zeros([self.max_len - n_residues, 6])], axis=0)
         elif n_residues > self.max_len:
