@@ -23,8 +23,6 @@ class FoldingDiffDataset(Dataset):
         t = torch.arange(T + 1)
         f_t = torch.cos((t / T + s) / (1 + s) * math.pi / 2.0).square()
         self.alpha_bar = f_t / f_t[0]
-        self.beta = torch.clip(1 - self.alpha_bar[1:] / self.alpha_bar[:-1], min=0.001, max=0.999)
-        self.alpha = 1 - self.beta
 
         self.alpha_bar_sqrt = torch.sqrt(self.alpha_bar)
         self.one_minus_alpha_bar_sqrt = torch.sqrt(1 - self.alpha_bar)

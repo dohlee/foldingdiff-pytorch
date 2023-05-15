@@ -1,8 +1,9 @@
 data/
 
 note/.ipynb_checkpoints/
-note/noising_demo
-note/denoising_demo
+note/noising_demo*
+note/denoising_demo*
+note/gallery
 note/*.pdb
 note/*.png
 note/*.gif

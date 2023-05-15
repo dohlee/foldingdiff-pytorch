@@ -20,6 +20,8 @@ def parse_argument():
     parser = argparse.ArgumentParser()
     parser.add_argument('--ckpt', type=str, default='Model checkpoint')
     parser.add_argument('--timepoints', type=int, default=1000)
+    parser.add_argument('--num-residues', type=int, default=64)
+    parser.add_argument('--batch-size', type=int, default=10)
     parser.add_argument('--mu', type=int, nargs='+', default=DEFAULT_MU)
     parser.add_argument('--output', type=str, required=True)
     return parser.parse_args()
@@ -41,31 +43,31 @@ def main():
     t = torch.arange(T + 1)
     f_t = torch.cos((t / T + s) / (1 + s) * math.pi / 2.0).square()
     alpha_bar = f_t / f_t[0]
-    beta = torch.cat([torch.tensor([0.0]), torch.clip(1 - alpha_bar[1:] / alpha_bar[:-1], min=0.001, max=0.999)])
+    beta = torch.cat([torch.tensor([0.0]), torch.clip(1 - alpha_bar[1:] / alpha_bar[:-1], min=1e-5, max=1 - 1e-5)])
     alpha = 1 - beta
 
     trajectory = []
     with torch.no_grad():
 
-        x = wrap(torch.randn(1, 64, 6))
-        trajectory.append(x)
+        x = wrap(torch.randn(args.batch_size, args.num_residues, 6))
+        trajectory.append(x.unsqueeze(1))
 
         for t in tqdm(range(T, 0, -1), desc='sampling'):
             sigma_t = math.sqrt( (1 - alpha_bar[t-1]) / (1 - alpha_bar[t]) * beta[t] )
 
             # Sample from N(0, sigma_t^2)
             if t > 1:
-                z = torch.randn(1, 64, 6) * sigma_t
+                z = torch.randn(args.batch_size, args.num_residues, 6) * sigma_t
             else:
-                z = torch.zeros(1, 64, 6)
+                z = torch.zeros(args.batch_size, args.num_residues, 6)
 
             # Update x
             t_tensor = torch.tensor([t]).long().unsqueeze(0)
             x = wrap( 1 / math.sqrt(alpha[t]) * (x - beta[t] / math.sqrt(1 - alpha_bar[t]) * model(x, t_tensor)) + z)
 
-            trajectory.append(x)
+            trajectory.append(x.unsqueeze(1))
 
-    trajectory = wrap( torch.cat(trajectory, dim=0) + mu )
+    trajectory = wrap( torch.cat(trajectory, dim=1) + mu )
     torch.save(trajectory, args.output)
 
 if __name__ == '__main__':
