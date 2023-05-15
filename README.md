@@ -10,11 +10,15 @@ The image below shows the forward (noising) process of the protein backbone stru
 ## Gallery
 ### Noising 
 
-<img src="img/noising.gif" width="325">
+<img src="img/noising.gif" width="250">
 
 ### Denoising
 
-<img src="img/denoising_64res.gif" width="325">
+<p float="left">
+  <img src="img/denoising_1.gif" width="250">
+  <img src="img/denoising_2.gif" width="250">
+  <img src="img/denoising_3.gif" width="250">
+</p>
 
 ## Installation
 
