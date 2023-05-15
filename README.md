@@ -63,5 +63,7 @@ Model training for reproduction is currently running. The live training log is a
 Visualized Ramachandran plot for 10 samples of length 64 for sanity check while training.
 Looks like the model is learning to produce reasonable secondary structures.
 
-<img src="img/ramachandran.png" width="325">
-<img src="img/ramachandran_generated.png" width="325">
+<p float="left">
+  <img src="img/ramachandran.png" width="325">
+  <img src="img/ramachandran_generated.png" width="325">
+</p>
