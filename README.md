@@ -7,11 +7,12 @@
 An unofficial re-implementation of FoldingDiff, a diffusion-based generative model for protein backbone structure generation.
 The image below shows the forward (noising) process of the protein backbone structure.
 
-## Noising
+## Gallery
+### Noising 
 
 <img src="img/noising.gif" width="325">
 
-## Denoising
+### Denoising
 
 <img src="img/denoising_64res.gif" width="325">
 
@@ -56,3 +57,11 @@ $ snakemake -s preprocess.smk -prq -j [CORES] --keep-going
 ## Reproduction status
 
 Model training for reproduction is currently running. The live training log is available at [here](https://api.wandb.ai/links/dohlee/1drc1ujg).
+
+
+### Ramachandran plot
+Visualized Ramachandran plot for 10 samples of length 64 for sanity check while training.
+Looks like the model is learning to produce reasonable secondary structures.
+
+<img src="img/ramachandran.png" width="325">
+<img src="img/ramachandran_generated.png" width="325">
