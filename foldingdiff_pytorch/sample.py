@@ -7,17 +7,27 @@ from tqdm import tqdm
 from foldingdiff_pytorch import FoldingDiff
 from foldingdiff_pytorch.util import wrap
 
+DEFAULT_MU = [
+    -1.311676263809204,
+    0.620250940322876,
+    0.3829933702945709,
+    1.940455198287964,
+    2.0217323303222656,
+    2.108278274536133
+]
 
 def parse_argument():
     parser = argparse.ArgumentParser()
     parser.add_argument('--ckpt', type=str, default='Model checkpoint')
     parser.add_argument('--timepoints', type=int, default=1000)
+    parser.add_argument('--mu', type=int, nargs='+', default=DEFAULT_MU)
     parser.add_argument('--output', type=str, required=True)
     return parser.parse_args()
 
 def main():
     args = parse_argument()
     T = args.timepoints
+    mu = torch.tensor(args.mu).float()
 
     # Load model
     model = FoldingDiff()
@@ -55,7 +65,7 @@ def main():
 
             trajectory.append(x)
 
-    trajectory = torch.cat(trajectory, dim=0)
+    trajectory = wrap( torch.cat(trajectory, dim=0) + mu )
     torch.save(trajectory, args.output)
 
 if __name__ == '__main__':
