@@ -80,19 +80,19 @@ class FoldingDiff(pl.LightningModule):
         return self.head(bert_output.last_hidden_state)
 
     def training_step(self, batch, batch_idx):
-        x, t, eps = batch["x"], batch["t"], batch["eps"]
+        x, t, eps, loss_mask = batch["x"], batch["t"], batch["eps"], batch["loss_mask"]
 
         out = self(x, t)
-        loss = self.criterion(out, eps)
+        loss = self.criterion(out * loss_mask, eps * loss_mask)
 
         self.log_dict({"train/loss": loss}, prog_bar=True, on_step=True, on_epoch=True, logger=True)
         return loss
 
     def validation_step(self, batch, batch_idx):
-        x, t, eps = batch["x"], batch["t"], batch["eps"]
+        x, t, eps, loss_mask = batch["x"], batch["t"], batch["eps"], batch["loss_mask"]
 
         out = self(x, t)
-        loss = self.criterion(out, eps)
+        loss = self.criterion(out * loss_mask, eps * loss_mask)
 
         self.log_dict({"val/loss": loss}, prog_bar=True, on_step=False, on_epoch=True, logger=True)
         return loss

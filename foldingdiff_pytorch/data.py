@@ -48,23 +48,27 @@ class FoldingDiffDataset(Dataset):
     def __getitem__(self, idx):
         r = self.records[idx]
         x0 = torch.tensor(np.load(self.data_dir / f"{r.id}.npy")).float()
+        loss_mask = torch.isfinite(x0).float()
+
         x0.nan_to_num_(0.0)
-        x0 = util.wrap(x0 - self.mu)
+        x0 = util.wrap(x0 - self.mu)        
 
         n_residues = len(x0)
         if n_residues < self.max_len:
             x0 = torch.cat([x0, torch.zeros([self.max_len - n_residues, 6])], axis=0)
+            loss_mask = torch.cat([loss_mask, torch.zeros([self.max_len - n_residues, 6])], axis=0)
         elif n_residues > self.max_len:
             start_idx = random.randint(0, n_residues - self.max_len)
             x0 = x0[start_idx : start_idx + self.max_len]
+            loss_mask = loss_mask[start_idx : start_idx + self.max_len]
 
         t = torch.randint(0, self.T, (1,)).long()
         eps = torch.randn(x0.shape)
-
         x = x0 * self.alpha_bar_sqrt[t] + eps * self.one_minus_alpha_bar_sqrt[t]
+
         x = util.wrap(x)
 
-        return {"x": x, "t": t, "eps": eps}
+        return {"x": x, "t": t, "eps": eps, "loss_mask": loss_mask}
 
 
 if __name__ == "__main__":
