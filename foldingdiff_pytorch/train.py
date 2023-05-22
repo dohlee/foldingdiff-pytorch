@@ -58,12 +58,14 @@ def main():
         drop_last=False,
         num_workers=4,
     )
-
     trainer = pl.Trainer(
         accelerator="gpu",
         devices=1,
         max_epochs=1500,
         logger=wandb_logger,
+        callbacks=[
+            pl.callbacks.LearningRateMonitor(logging_interval="step"),
+        ],
     )
     trainer.fit(
         model,
