@@ -40,6 +40,11 @@ $ python -m foldingdiff_pytorch.sample --ckpt [CHECKPOINT_PATH] \
   --timepoints 1000 --out [OUTPUT_PATH]
 ```
 
+### Sampling pipeline
+```bash
+$ snakemake -s sample.smk -j1
+```
+
 ## Downloading and preprocessing training data
 Download non-redundant protein backbone structure data (40% similary cutoff) from CATH.
 ```bash 

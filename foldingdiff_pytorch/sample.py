@@ -36,6 +36,7 @@ def main():
 
     state_dict = torch.load(args.ckpt)['state_dict']
     model.load_state_dict(state_dict)
+    model.cuda()
 
     model.eval()
 
@@ -63,7 +64,8 @@ def main():
 
             # Update x
             t_tensor = torch.tensor([t]).long().unsqueeze(0)
-            x = wrap( 1 / math.sqrt(alpha[t]) * (x - beta[t] / math.sqrt(1 - alpha_bar[t]) * model(x, t_tensor)) + z)
+            out = model(x.cuda(), t_tensor.cuda()).cpu()
+            x = wrap( 1 / math.sqrt(alpha[t]) * (x - beta[t] / math.sqrt(1 - alpha_bar[t]) * out) + z)
 
             trajectory.append(x.unsqueeze(1))
 
