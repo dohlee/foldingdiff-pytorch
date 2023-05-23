@@ -1,4 +1,6 @@
 data/
+folds/
+ckpts/
 
 note/.ipynb_checkpoints/
 note/noising_demo*

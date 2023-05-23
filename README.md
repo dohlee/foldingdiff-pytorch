@@ -41,6 +41,9 @@ $ python -m foldingdiff_pytorch.sample --ckpt [CHECKPOINT_PATH] \
 ```
 
 ### Sampling pipeline
+
+With the `snakemake` command below, you can simply run unconditional protein backbone generation pipeline to obtain `.pt` files containing backbone coordinates and `.gif` files showing the whole denoising process.
+
 ```bash
 $ snakemake -s sample.smk -j1
 ```
