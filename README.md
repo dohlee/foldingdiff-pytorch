@@ -79,3 +79,15 @@ Looks like the model is learning to produce reasonable secondary structures.
   <img src="img/ramachandran.png" width="325">
   <img src="img/ramachandran_generated.png" width="325">
 </p>
+
+## Citation
+```bibtex
+@misc{wu2022protein,
+      title={Protein structure generation via folding diffusion}, 
+      author={Kevin E. Wu and Kevin K. Yang and Rianne van den Berg and James Y. Zou and Alex X. Lu and Ava P. Amini},
+      year={2022},
+      eprint={2209.15611},
+      archivePrefix={arXiv},
+      primaryClass={q-bio.BM}
+}
+```
