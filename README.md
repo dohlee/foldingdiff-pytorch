@@ -5,6 +5,7 @@
 ![banner](img/banner.png)
 
 An unofficial re-implementation of FoldingDiff, a diffusion-based generative model for protein backbone structure generation.
+The official implementation of FoldingDiff can be found [here](https://github.com/microsoft/foldingdiff).
 
 ## Gallery
 ### Noising 
